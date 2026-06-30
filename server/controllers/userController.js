@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 import { sendSuccess } from '../utils/apiResponse.js';
+import { seedDataForUser } from '../utils/seeder.js';
 
 // @desc  Get current user profile
 // @route GET /api/users/me
@@ -12,10 +13,10 @@ export const getMe = asyncHandler(async (req, res) => {
 // @desc  Update profile
 // @route PUT /api/users/me
 export const updateMe = asyncHandler(async (req, res) => {
-  const { name, avatar, currency } = req.body;
+  const { name, avatar, currency, phone, company, twoFactorEnabled, role } = req.body;
   const user = await User.findByIdAndUpdate(
     req.user._id,
-    { name, avatar, currency },
+    { name, avatar, currency, phone, company, twoFactorEnabled, role },
     { new: true, runValidators: true }
   ).select('-password -refreshToken');
   sendSuccess(res, 200, 'Profile updated', user);
@@ -43,3 +44,11 @@ export const deleteMe = asyncHandler(async (req, res) => {
   await User.findByIdAndDelete(req.user._id);
   sendSuccess(res, 200, 'Account deleted successfully');
 });
+
+// @desc  Seed mock data for current user
+// @route POST /api/users/seed
+export const seedUserMockData = asyncHandler(async (req, res) => {
+  await seedDataForUser(req.user._id);
+  sendSuccess(res, 200, 'Mock data seeded successfully');
+});
+

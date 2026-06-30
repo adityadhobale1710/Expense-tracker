@@ -12,6 +12,8 @@ import Expenses from './pages/Expenses/Expenses';
 import Budget from './pages/Budget/Budget';
 import Reports from './pages/Reports/Reports';
 import Profile from './pages/Profile/Profile';
+import BillCalendar from './pages/Calendar/BillCalendar';
+import AIInsights from './pages/AIInsights/AIInsights';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -41,6 +43,8 @@ const AppRoutes = () => (
       <Route path="budget" element={<Budget />} />
       <Route path="reports" element={<Reports />} />
       <Route path="profile" element={<Profile />} />
+      <Route path="calendar" element={<BillCalendar />} />
+      <Route path="ai-insights" element={<AIInsights />} />
     </Route>
     <Route path="*" element={<Navigate to="/dashboard" replace />} />
   </Routes>
