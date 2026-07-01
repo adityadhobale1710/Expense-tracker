@@ -21,11 +21,14 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-slate-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-lg glow-primary">
-            ₹
+          <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center text-white glow-primary flex-shrink-0">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 7h-8v10h8a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+              <path d="M5 21V5a2 2 0 0 1 2-2h10v4H7a2 2 0 0 0-2 2v12h14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
+            </svg>
           </div>
           <div>
-            <h1 className="font-bold text-slate-100 text-base leading-tight">ExpenseTrack</h1>
+            <h1 className="font-bold text-slate-100 text-base leading-tight">My Expense</h1>
             <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Pro Edition</p>
           </div>
         </div>

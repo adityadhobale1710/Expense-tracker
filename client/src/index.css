@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Slate family mapping for light theme */
+  --slate-50: 15 23 42;
+  --slate-100: 30 41 59;
+  --slate-200: 51 65 85;
+  --slate-300: 71 85 105;
+  --slate-400: 100 116 139;
+  --slate-500: 148 163 184;
+  --slate-600: 203 213 225;
+  --slate-700: 226 232 240;
+  --slate-800: 241 245 249;
+  --slate-900: 248 250 252;
+
+  /* Dark family mapping for light theme */
+  --dark-50: 2 6 23;
+  --dark-100: 15 23 42;
+  --dark-700: 226 232 240;
+  --dark-800: 255 255 255;
+  --dark-900: 248 250 252;
+}
+
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -17,7 +39,7 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-dark-800;
+    @apply bg-slate-800;
   }
   ::-webkit-scrollbar-thumb {
     @apply bg-primary-600 rounded-full;
@@ -33,7 +55,7 @@
     @apply bg-dark-800 border border-slate-700/50 rounded-xl p-4 shadow-md;
   }
   .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+    @apply bg-white/75 backdrop-blur-md border border-slate-700/50 rounded-2xl;
   }
 
   /* ── Buttons ────────────────────────────────────────── */

@@ -13,7 +13,7 @@ const PAGE_TITLES = {
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
-  const page = PAGE_TITLES[pathname] || { title: 'ExpenseTrack', subtitle: '' };
+  const page = PAGE_TITLES[pathname] || { title: 'My Expense', subtitle: '' };
 
   const now = new Date();
   const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';

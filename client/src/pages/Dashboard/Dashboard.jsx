@@ -15,18 +15,6 @@ const BADGES = [
   { id: "b5", name: "Streak Legend", icon: "📅", desc: "Log transactions 50 days in a row", unlocked: false }
 ];
 
-const FAMILY_MEMBERS = [
-  { id: "f-1", name: "You (Aditya)", role: "Owner", spent: 9200, limit: 25000, avatar: "A", color: "from-indigo-500 to-blue-500" },
-  { id: "f-2", name: "Sarah (Spouse)", role: "Member", spent: 7400, limit: 15000, avatar: "S", color: "from-pink-500 to-purple-500" },
-  { id: "f-3", name: "Leo (Son)", role: "Member", spent: 1800, limit: 5000, avatar: "L", color: "from-amber-500 to-orange-500" }
-];
-
-const LEADERBOARD = [
-  { rank: 1, name: "Kabir Mehta", rate: "42.8%", score: "92 XP" },
-  { rank: 2, name: "You (Aditya)", rate: "38.2%", score: "82 XP" },
-  { rank: 3, name: "Rohan Das", rate: "31.5%", score: "78 XP" },
-  { rank: 4, name: "Neha Sharma", rate: "28.1%", score: "64 XP" }
-];
 
 const WEALTH_HOLDINGS = [
   { name: "Nifty 50 Index Fund", type: "Mutual Fund", amount: 120000, returns: "+14.2%", color: "text-green-400" },
@@ -51,8 +39,6 @@ const WIDGET_LABELS = {
   transactions: "Recent transactions",
   bills: "Upcoming obligations",
   eco: "Eco emission tracker",
-  family: "Shared family wallet",
-  leaderboard: "Savings leaderboard",
   wealth: "👑 Wealth & Investment tracker"
 };
 
@@ -63,7 +49,7 @@ export default function Dashboard() {
   // Widget Order state
   const [widgetOrder, setWidgetOrder] = useState(() => {
     const saved = localStorage.getItem('dashboard_widget_order');
-    return saved ? JSON.parse(saved) : ['health', 'gamified', 'heatmap', 'aiInsights', 'transactions', 'bills', 'eco', 'family', 'leaderboard', 'wealth'];
+    return saved ? JSON.parse(saved) : ['health', 'gamified', 'heatmap', 'aiInsights', 'transactions', 'bills', 'eco', 'wealth'];
   });
 
   // Simulator Modals state
@@ -356,7 +342,7 @@ export default function Dashboard() {
                 <div className="flex flex-col items-center py-6">
                   <div className="relative w-36 h-36 flex items-center justify-center">
                     <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" stroke="#1e293b" strokeWidth="8" fill="transparent" />
+                      <circle cx="50" cy="50" r="40" stroke="#cbd5e1" strokeWidth="8" fill="transparent" />
                       <circle cx="50" cy="50" r="40" stroke="#6366f1" strokeWidth="8" fill="transparent" strokeDasharray="251" strokeDashoffset={251 - (251 * 82) / 100} />
                     </svg>
                     <div className="absolute flex flex-col items-center">
@@ -610,77 +596,7 @@ export default function Dashboard() {
             );
           }
 
-          if (widgetId === 'family') {
-            return (
-              <div
-                key={widgetId}
-                draggable
-                onDragStart={() => handleDragStart(widgetId)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(widgetId)}
-                className="card flex flex-col justify-between hover:border-indigo-500/20 transition-all cursor-move"
-              >
-                <div className="flex justify-between items-center pb-3 border-b border-slate-700/50">
-                  <h3 className="text-sm font-bold text-slate-200">👥 Shared Family Wallet</h3>
-                  <span className="text-xs text-slate-500">≡ Drag</span>
-                </div>
-                <div className="py-3 space-y-2">
-                  {FAMILY_MEMBERS.map(member => (
-                    <div key={member.id} className="flex items-center gap-3 text-xs">
-                      <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${member.color} flex items-center justify-center text-white font-bold`}>
-                        {member.avatar}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between">
-                          <span className="font-bold text-slate-300 truncate">{member.name}</span>
-                          <span className="text-slate-400">₹{member.spent.toLocaleString('en-IN')}</span>
-                        </div>
-                        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
-                          <div className="bg-primary-500 h-full" style={{ width: `${(member.spent / member.limit) * 100}%` }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          }
 
-          if (widgetId === 'leaderboard') {
-            return (
-              <div
-                key={widgetId}
-                draggable
-                onDragStart={() => handleDragStart(widgetId)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(widgetId)}
-                className="card flex flex-col justify-between hover:border-indigo-500/20 transition-all cursor-move"
-              >
-                <div className="flex justify-between items-center pb-3 border-b border-slate-700/50">
-                  <h3 className="text-sm font-bold text-slate-200">🏆 Savings Leaderboard</h3>
-                  <span className="text-xs text-slate-500">≡ Drag</span>
-                </div>
-                <div className="py-3 space-y-2.5">
-                  {LEADERBOARD.map(p => (
-                    <div key={p.rank} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${
-                          p.rank === 1 ? 'bg-yellow-500/20 text-yellow-400' : p.rank === 2 ? 'bg-slate-400/20 text-slate-300' : 'bg-amber-700/20 text-amber-500'
-                        }`}>
-                          {p.rank}
-                        </span>
-                        <span className="text-slate-300">{p.name}</span>
-                      </div>
-                      <div className="flex gap-3 font-semibold">
-                        <span className="text-slate-400">{p.rate}</span>
-                        <span className="text-primary-400">{p.score}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          }
 
           if (widgetId === 'wealth') {
             if (user?.role !== 'premium' && user?.role !== 'admin') {
@@ -789,10 +705,10 @@ export default function Dashboard() {
                               <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
                             </linearGradient>
                           </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                           <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} />
                           <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
-                          <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', fontSize: 11 }} />
+                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #cbd5e1', fontSize: 11 }} itemStyle={{ color: '#0f172a' }} labelStyle={{ color: '#0f172a' }} />
                           <Area type="monotone" dataKey="Wealth" stroke="#f59e0b" fillOpacity={1} fill="url(#colorWealth)" strokeWidth={2} />
                         </AreaChart>
                       </ResponsiveContainer>
