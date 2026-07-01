@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useExpense } from '../../context/ExpenseContext';
 import { useAuth } from '../../context/AuthContext';
+import { PROGRESSION_LEVELS } from '../Achievements/achievementsData';
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip
 } from 'recharts';
@@ -45,6 +47,42 @@ const WIDGET_LABELS = {
 export default function Dashboard() {
   const { summary, fetchSummary, expenses, fetchExpenses, incomes, fetchIncomes, categories, fetchCategories, addExpense, addIncome } = useExpense();
   const { user, updateUser } = useAuth();
+
+  // Gamification state synchronized with Achievements page
+  const [gameXp, setGameXp] = useState(() => parseInt(localStorage.getItem('game_xp') || '3450', 10));
+  const [gameCoins, setGameCoins] = useState(() => parseInt(localStorage.getItem('game_coins') || '640', 10));
+  const [gameStreak, setGameStreak] = useState(() => parseInt(localStorage.getItem('game_streak') || '18', 10));
+  const [unlockedBadgesCount, setUnlockedBadgesCount] = useState(() => {
+    try {
+      const saved = localStorage.getItem('game_achievements');
+      if (saved) {
+        return JSON.parse(saved).filter(a => a.unlocked).length;
+      }
+    } catch (e) {}
+    return 13; // default unlocked count
+  });
+
+  // Keep in sync with changes in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setGameXp(parseInt(localStorage.getItem('game_xp') || '3450', 10));
+      setGameCoins(parseInt(localStorage.getItem('game_coins') || '640', 10));
+      setGameStreak(parseInt(localStorage.getItem('game_streak') || '18', 10));
+      try {
+        const saved = localStorage.getItem('game_achievements');
+        if (saved) {
+          setUnlockedBadgesCount(JSON.parse(saved).filter(a => a.unlocked).length);
+        }
+      } catch (e) {}
+    };
+    window.addEventListener('storage', handleStorageChange);
+    // Polling as a fallback for same-tab updates
+    const interval = setInterval(handleStorageChange, 1000);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Widget Order state
   const [widgetOrder, setWidgetOrder] = useState(() => {
@@ -359,6 +397,25 @@ export default function Dashboard() {
           }
 
           if (widgetId === 'gamified') {
+            // Calculate active level info inside the render block
+            let currentLvlInfo = PROGRESSION_LEVELS[0];
+            let nextLvlInfo = PROGRESSION_LEVELS[1];
+            
+            for (let i = 0; i < PROGRESSION_LEVELS.length; i++) {
+              if (gameXp >= PROGRESSION_LEVELS[i].xpRequired) {
+                currentLvlInfo = PROGRESSION_LEVELS[i];
+                nextLvlInfo = PROGRESSION_LEVELS[i + 1] || PROGRESSION_LEVELS[i];
+              } else {
+                break;
+              }
+            }
+            
+            const baseXP = currentLvlInfo.xpRequired;
+            const targetXP = nextLvlInfo.xpRequired;
+            const earnedXP = gameXp - baseXP;
+            const totalXPNeeded = targetXP - baseXP;
+            const progressPct = currentLvlInfo.level === 20 ? 100 : Math.min(Math.round((earnedXP / totalXPNeeded) * 100), 100);
+
             return (
               <div
                 key={widgetId}
@@ -366,35 +423,62 @@ export default function Dashboard() {
                 onDragStart={() => handleDragStart(widgetId)}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(widgetId)}
-                className="card flex flex-col justify-between hover:border-indigo-500/20 transition-all cursor-move"
+                className="card flex flex-col justify-between hover:border-indigo-500/20 transition-all cursor-move relative overflow-hidden"
               >
+                {/* Visual Glass Shine */}
+                <div className="absolute top-0 right-0 p-2 opacity-5 text-7xl pointer-events-none select-none">
+                  {currentLvlInfo.icon}
+                </div>
+
                 <div className="flex justify-between items-center pb-3 border-b border-slate-700/50">
-                  <h3 className="text-sm font-bold text-slate-200">🔥 Achievements & Levels</h3>
+                  <h3 className="text-sm font-bold text-slate-200">🔥 Level & Achievements</h3>
                   <span className="text-xs text-slate-500">≡ Drag</span>
                 </div>
-                <div className="py-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs font-bold text-amber-400">Lvl 4 Saver</span>
-                    <span className="text-xs font-semibold text-slate-400">3,450 / 4,000 XP</span>
-                  </div>
-                  <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-gradient-to-r from-indigo-500 to-primary-500 h-full rounded-full" style={{ width: '86.25%' }}></div>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                    <span>⚡ Streak:</span>
-                    <span className="font-extrabold text-orange-400">18 consecutive days logged!</span>
-                  </div>
-                  <div className="flex gap-2 justify-center pt-2">
-                    {BADGES.map(badge => (
-                      <span
-                        key={badge.id}
-                        title={`${badge.name}: ${badge.desc}`}
-                        className={`text-xl p-1.5 rounded-xl border ${badge.unlocked ? 'bg-primary-600/10 border-primary-500/20' : 'bg-slate-900/40 border-slate-800 opacity-20'}`}
-                      >
-                        {badge.icon}
+                
+                <div className="py-3 space-y-3.5">
+                  {/* Level & XP */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div>
+                      <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-md text-[10px] font-bold text-amber-400">
+                        Lvl {currentLvlInfo.level} — {currentLvlInfo.name}
                       </span>
-                    ))}
+                    </div>
+                    <span className="font-semibold text-slate-400">{gameXp.toLocaleString()} XP</span>
                   </div>
+
+                  {/* XP Bar */}
+                  <div className="space-y-1">
+                    <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                      <div
+                        className="bg-gradient-to-r from-indigo-500 to-primary-500 h-full rounded-full transition-all duration-500"
+                        style={{ width: `${progressPct}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[9px] text-slate-500">
+                      <span>{progressPct}% to next lvl</span>
+                      <span>Coins: {gameCoins}🪙</span>
+                    </div>
+                  </div>
+
+                  {/* Streak & Badges Unlocked */}
+                  <div className="flex justify-between items-center text-xs text-slate-300 bg-slate-900/30 border border-slate-800 p-2.5 rounded-xl">
+                    <div className="flex items-center gap-1">
+                      <span>⚡ Streak:</span>
+                      <span className="font-extrabold text-orange-400">{gameStreak} Days</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>🏅 Unlocked:</span>
+                      <span className="font-extrabold text-emerald-400">{unlockedBadgesCount} / 27</span>
+                    </div>
+                  </div>
+
+                  {/* Quick link button to Achievements page */}
+                  <Link
+                    to="/achievements"
+                    className="btn bg-primary-600 hover:bg-primary-500 text-white shadow-lg text-center text-xs font-semibold py-2 rounded-xl transition-all duration-200 block w-full active:scale-95 cursor-pointer"
+                  >
+                    Open Achievements Panel 🏆
+                  </Link>
                 </div>
               </div>
             );

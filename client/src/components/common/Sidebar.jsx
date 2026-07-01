@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: '/reports',     icon: '📈', label: 'Reports' },
   { to: '/calendar',    icon: '📅', label: 'Bill Calendar' },
   { to: '/ai-insights',  icon: '🤖', label: 'AI Insights' },
+  { to: '/achievements', icon: '🏆', label: 'Achievements' },
   { to: '/profile',     icon: '👤', label: 'Profile' },
 ];
 
